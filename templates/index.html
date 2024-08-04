@@ -7,29 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Upload Conversation and Ask Questions</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <label for="transcript">Upload Transcript:</label>
-        <input type="file" id="transcript" name="transcript" accept=".txt" required><br><br>
-        
-        <label for="question1">Question 1:</label>
-        <input type="text" id="question1" name="questions" required><br><br>
-        
-        <label for="question2">Question 2:</label>
-        <input type="text" id="question2" name="questions" required><br><br>
-        
-        <label for="question3">Question 3:</label>
-        <input type="text" id="question3" name="questions" required><br><br>
-
-        <label for="question4">Question 4:</label>
-        <input type="text" id="question4" name="questions" required><br><br>
-
-        <label for="question5">Question 5:</label>
-        <input type="text" id="question5" name="questions" required><br><br>
-
-        <label for="question6">Question 6:</label>
-        <input type="text" id="question6" name="questions" required><br><br>
-
+    <h1>Upload Conversation Transcript</h1>
+    <form method="POST">
+        <label for="transcript">Paste Transcript:</label><br>
+        <textarea id="transcript" name="transcript" rows="10" cols="50" required></textarea><br><br>
         <button type="submit">Submit</button>
     </form>
 </body>

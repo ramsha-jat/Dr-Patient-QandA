@@ -1,12 +1,12 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, redirect, url_for
 import torch
 from transformers import BertTokenizer, BertForQuestionAnswering
 import logging
 
-# Disable warnings
-logging.disable(logging.WARNING)
+
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Set a secret key for session management
 
 # Load pre-trained model and tokenizer
 model_name = "bert-large-uncased-whole-word-masking-finetuned-squad"
@@ -34,21 +34,30 @@ def answer_question(question, context, max_length=512):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Get the uploaded file
-        transcript_file = request.files['transcript']
-        questions = request.form.getlist('questions')
-
-        # Read the transcript
-        transcript = transcript_file.read().decode('utf-8')
-
-        # Get answers for the questions
-        answers = {}
-        for question in questions:
-            answer = answer_question(question, transcript)
-            answers[question] = answer
-
-        return render_template('results.html', transcript=transcript, questions=questions, answers=answers)
+        transcript = request.form['transcript']
+        session['transcript'] = transcript
+        session['qa'] = []  # Initialize the list to store questions and answers
+        return redirect(url_for('ask_question'))
     return render_template('index.html')
+
+@app.route('/ask', methods=['GET', 'POST'])
+def ask_question():
+    transcript = session.get('transcript')
+    if not transcript:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        question = request.form['question']
+        answer = answer_question(question, transcript)
+        
+        # Add question and answer to the session
+        qa_list = session.get('qa', [])
+        qa_list.append({'question': question, 'answer': answer})
+        session['qa'] = qa_list
+        
+        return render_template('results.html', qa_list=qa_list)
+    
+    return render_template('ask.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
